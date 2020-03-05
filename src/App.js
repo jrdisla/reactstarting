@@ -25,17 +25,9 @@ import Axios from 'axios';
 //   );
 // }
 
-
-	const testData = [
-			{name: "Dan Abramov", avatar_url: "https://avatars0.githubusercontent.com/u/810438?v=4", company: "@facebook"},
-      {name: "Sophie Alpert", avatar_url: "https://avatars2.githubusercontent.com/u/6820?v=4", company: "Humu"},
-  		{name: "Julio Disla T.   ", avatar_url: "https://avatars2.githubusercontent.com/u/63648?v=4", company: "Facebook"},
-	];
-
-
 const CardList = (props) => (
  <div>
-   {props.profile.map(pro => <Card {...pro}/>)}
+   {props.profile.map(pro => <Card key={pro.id} {...pro}/>)}
  </div>
 );
 
@@ -60,9 +52,10 @@ class Form extends React.Component{
   };
   handleSubmit = async (event) => {
   event.preventDefault();
-  //const  response = await fetch(`https://api.github.com/users/${this.state.username}`);
       const response = await Axios.get(`https://api.github.com/users/${this.state.username}`);
-      console.log(response.data);
+      this.props.onSubmit (response.data);
+      this.setState({username:''});
+
   };
   render() {
     return (
@@ -81,12 +74,17 @@ class Form extends React.Component{
 
 class App extends React.Component{
   state = {
-    profiles: testData
+    profiles: []
   };
+  addNewP = (profileD) =>{
+      this.setState(prevState =>({
+          profiles: [...prevState.profiles,profileD]
+      }))
+  }
   render() {
     return(
         <div align="center" className="header">{this.props.title}
-        <Form/>
+        <Form onSubmit={this.addNewP} />
         <CardList profile={this.state.profiles} />
         </div>
 
